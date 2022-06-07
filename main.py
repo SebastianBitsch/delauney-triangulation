@@ -71,23 +71,16 @@ def visible_edges(p, points):
     i = np.argmax(angles)
     min_angle = np.min(angles)
 
-    e = []
+    edges = []
     while True:
-        e.append((points[i%3],points[(i+1)%3]))
+        edges.append((points[i%3],points[(i+1)%3]))
         i += 1
         if angles[i%3] == min_angle:
             break
-    print("---")
-    print(e)
-    print(angles)
-    print(points)
-    print("---")
-    return e
-
-
+    
+    return edges
 
 if __name__ == "__main__":
-    print("MAIN")
     triangles = []
     edges = []
     points = []
@@ -123,10 +116,11 @@ if __name__ == "__main__":
     x = np.delete(x,0,0)
 
     # Get visible edges from the point
-    e = visible_edges(xi, points)
+    # TODO: SHOULD TAKE POINTS; - BUT WONT WORK BECAUSE 
+    # APPROACH CURRENTLY REQUIRES POINTS TO BE ORDERED
+    # COUNTER-CLOCKWISE
+    e = visible_edges(xi, tri)
 
-    print(points)
-    print(e)
     # For every edge add new triangle, edges and point
     for edge in e:
         tri = sorted([edge[0],edge[1],xi], key=lambda x: angle(x,C))
