@@ -5,6 +5,8 @@ from numpy.linalg import norm
 
 from util import circle_center, angle, sort_points
 
+# Number of points
+N = 20
 
 def get_closest_point(x, x0, xj):
     """
@@ -61,6 +63,11 @@ def get_closest_point(x, x0, xj):
 
 
 def visible_edges(p, points):
+    """
+    Find and return the visible edges from point p
+    https://math.stackexchange.com/a/1743061
+    """
+
     angles = np.array([angle(x,p) for x in points])
 
     # If the triangle collides with the positive x-axis from the point - rotate 90 degrees to
@@ -85,8 +92,9 @@ if __name__ == "__main__":
     edges = []
     points = []
 
+    outer_edges = []
+
     # Generate points
-    N = 20
     x = np.random.rand(N,2)
     all_x = deepcopy(x)
 
@@ -126,8 +134,18 @@ if __name__ == "__main__":
         tri = sorted([edge[0],edge[1],xi], key=lambda x: angle(x,C))
 
         triangles.append(tri)
-        edges.extend([[tri[0],tri[1]],[tri[1],tri[2]],[tri[2],tri[0]]])
+        edges.extend([[edge[0],xi],[edge[1],xi]])
         points.append(xi)
+
+    # Remove inner edges
+    for edge in edges:
+        print(edge)
+    all_points_x = np.array(edges)[:,:,0].flatten()
+    print(all_points_x)
+    unique, counts = np.unique(all_points_x, return_counts=True)
+    print(unique, counts)
+    # for edge in edges:
+    #     print(edge[0])
 
     
     plt.figure(figsize=[7,7])
