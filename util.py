@@ -1,9 +1,13 @@
 import numpy as np
 
+def diff(a,b):
+    return [x-y for x,y in zip(a,b)]
 
-def sort_points(x: list[list], x0: list):
+def sort_points(x, x0: list):
     """ Sort points by distance to a seed point x0, by the second order euclidean dist |xi - x0|**2"""
-    return sorted(x, key=lambda xi: np.linalg.norm(xi-x0,2))
+    arr = sorted(x, key=lambda xi: np.linalg.norm(diff(xi,x0),2))
+    return np.array(arr).tolist()
+    
 
 
 def circle_center(A,B,C) -> list[float]:
