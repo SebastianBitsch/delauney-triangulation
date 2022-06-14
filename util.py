@@ -1,6 +1,6 @@
 import numpy as np
 
-def diff(a,b):
+def diff(a:list, b:list) -> list:
     """
     Helper function for subtracting two lists - similarily to numpy arrays.
     eg. [2,5,8] - [1,5,3] = [1,0,5]
