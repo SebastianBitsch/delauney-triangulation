@@ -1,6 +1,7 @@
 from copy import deepcopy
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 from util import circle_center, angle, sort_points, diff
 
@@ -8,6 +9,12 @@ from util import circle_center, angle, sort_points, diff
 
 # Number of points
 N = 10
+
+# Used for animating the process
+animation_inner_edges = []
+animation_outer_edges = []
+animation_special_points = []
+animation_points = []
 
 def plot_configuration(points, inner_edges, outer_edges, special_points=[], fig_size=(7,7)):
     plt.figure(figsize=fig_size)
@@ -166,8 +173,13 @@ if __name__ == "__main__":
                     outer_edges.append([edge[1],xi])
             
             points.append(xi)
-        
 
+        animation_points.append(all_x)
+        animation_special_points.append(xi)
+        animation_outer_edges.append(outer_edges)
+        animation_inner_edges.append(edges)
         # Plot last configuration
         if len(x) == 0:
             plot_configuration(all_x, edges, outer_edges)
+
+    #animate_process()
