@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from util import circle_center, angle, sort_points, diff
 
 # Number of points
-N = 20
+N = 30
 
 def get_closest_point(x, x0, xj):
     """
@@ -67,41 +67,52 @@ def visible_edges(p, points):
     https://math.stackexchange.com/a/1743061
     """
 
-    angles = np.array([angle(x,p) for x in points])
+    offset = 0
+    angles = np.array([angle(x,p,offset) for x in points])
+    diff = np.max(angles) - np.min(angles)
+    
+    while 180 < diff:
+        offset += 5
+        angles = np.array([angle(x,p,offset) for x in points])
+        diff = np.max(angles) - np.min(angles)
+
+    n = len(points)
 
     # If the triangle collides with the positive x-axis from the point - rotate 90 degrees to
-    if np.array([270 < x or x < 180 for x in angles]).all():
-        angles += 90
-        angles %= 360
+    # if np.array([270 < x or x < 180 for x in angles]).all():
+    #     angles += 90
+    #     angles %= 360
 
     i = np.argmax(angles)
     min_angle = np.min(angles)
 
     edges = []
     while True:
-        edges.append([points[i%3],points[(i+1)%3]])
+        edges.append([points[i%n],points[(i+1)%n]])
         i += 1
-        if angles[i%3] == min_angle:
+        if angles[i%n] == min_angle:
             break
     
     return edges
 
-def get_outer_edges(edges):
-    outer = []
-    # Remove inner edges # Only consider the x-coordinate to make it simpler - no chance two points share x-coord
-    all_points_x = np.array(edges)[:,:,0].flatten()
-    unique, counts = np.unique(all_points_x, return_counts=True)
-    counts = dict(zip(unique,counts))
+# def get_outer_edges(edges):
+#     outer = []
+#     # Remove inner edges # Only consider the x-coordinate to make it simpler - no chance two points share x-coord
+#     all_points_x = np.array(edges)[:,:,0].flatten()
+#     unique, counts = np.unique(all_points_x, return_counts=True)
+#     counts = dict(zip(unique,counts))
 
-    for edge in edges:
-        point_a, point_b = edge
-        count_a, count_b = counts[point_a[0]], counts[point_b[0]]
+#     for edge in edges:
+#         point_a, point_b = edge
+#         count_a, count_b = counts[point_a[0]], counts[point_b[0]]
 
-        # If both points have 3+ connections, it is an inner edge and should be removed
-        if count_a + count_b < 6:
-            outer.append(edge)
+#         # If both points have 3+ connections, it is an inner edge and should be removed
+#         if count_a + count_b < 6:
+#             outer.append(edge)
         
-    return outer
+#     return outer
+
+
 
 # def norm(x,y):
 #     return 
@@ -116,7 +127,7 @@ if __name__ == "__main__":
 
     outer_edges = []
 
-    #np.random.seed(25)#11 #25 #16
+    np.random.seed(29)#11 #25 #16
     # Generate points
     x = np.random.rand(N,2).tolist()
     all_x = deepcopy(np.array(x))
@@ -129,75 +140,87 @@ if __name__ == "__main__":
     x = sort_points(x,x0)
 
     # Get closest point to x0
-    
     xj = x[0]
     x = np.delete(x,0,0)
     x = x.tolist()
 
     x, xk, C = get_closest_point(x, x0, xj)
     # Add triangle and edges
-    tri = sorted([x0,xk,xj], key=lambda x: angle(x,C))
+    tri = sorted([x0,xk,xj], key=lambda x: angle(x,C,0))
     
     triangles.append(tri)
     edges.extend([[tri[0],tri[1]],[tri[1],tri[2]],[tri[2],tri[0]]])
     points.extend([x0,xk,xj])
+    outer_edges = deepcopy(edges)
 
     # Sort points according to distance from center
     x = sort_points(x,C)
-    xi = x[0]
-    x = np.delete(x,0,0)
-    outer_edges = deepcopy(edges)
-    # outer_edges = get_outer_edges(edges)
-    p = []
-    for o in outer_edges:
-        for i in o:
-            p.append(i)
-    outer_verts = np.unique(p,axis=0).tolist()
-    outer_verts = sorted(outer_verts, key=lambda x: angle(x,C))
 
-    # Get visible edges from the point
-    # TODO: SHOULD TAKE POINTS; - BUT WONT WORK BECAUSE 
-    # APPROACH CURRENTLY REQUIRES POINTS TO BE ORDERED
-    # COUNTER-CLOCKWISE
-    e = visible_edges(xi, outer_verts)
+    while 0 < len(x):
+        print(f"Points left: {len(x)}")
+        xi = x[0]
+        x = np.delete(x,0,0).tolist()
+        # outer_edges = get_outer_edges(edges)
+        p = []
+        for o in outer_edges:
+            for i in o:
+                p.append(i)
+        outer_verts = np.unique(p,axis=0).tolist()
+        outer_verts = sorted(outer_verts, key=lambda x: angle(x,C,0))
 
-    # For every edge add new triangle, edges and point
-    for i, edge in enumerate(e):
-        tri = sorted([edge[0],edge[1],xi], key=lambda x: angle(x,C))
+        # Get visible edges from the point
+        # TODO: SHOULD TAKE POINTS; - BUT WONT WORK BECAUSE 
+        # APPROACH CURRENTLY REQUIRES POINTS TO BE ORDERED
+        # COUNTER-CLOCKWISE
+        e = visible_edges(xi, outer_verts)
 
-        triangles.append(tri)
-        edges.extend([[edge[0],xi],[edge[1],xi]])
-        outer_edges.remove(edge)
-        # outer_edges.extend([[edge[0],xi],[edge[1],xi]])
+        # For every edge add new triangle, edges and point
+        for i, edge in enumerate(e):
+            tri = sorted([edge[0],edge[1],xi], key=lambda x: angle(x,C,0))
 
-        # Convoluted way of not adding the middle edge 
-        if len(e) == 1:
-            outer_edges.extend([[edge[0],xi],[edge[1],xi]])
-        else:
-            if i == 0:
-                outer_edges.append([edge[0],xi])
-            elif i == 1:
-                outer_edges.append([edge[1],xi])
+            triangles.append(tri)
+
+            # Add new edges
+            if not [edge[0],xi] in edges:
+                edges.append([edge[0],xi])
+            if not [edge[1],xi] in edges:
+                edges.append([edge[1],xi])
+
+            # Remove outer edge that formed the base of triangle
+            if edge in outer_edges:
+                outer_edges.remove(edge)
             else:
-                print("Something happened")        
-        points.append(xi)
-    
+                outer_edges.remove([edge[1],edge[0]])
 
-    plt.figure(figsize=[7,7])
-    plt.axes([0.1, 0.1, 0.8, 0.8], xlim=(0, 1), ylim=(0, 1))
-    plt.scatter(x=all_x[:,0],y=all_x[:,1])
-    plt.scatter(x=[x0[0]],y=[x0[1]],label="x0")
-    plt.scatter(x=[xj[0]],y=[xj[1]],label="xj")
-    plt.scatter(x=[xk[0]],y=[xk[1]],label="xk")
-    plt.scatter(x=[xi[0]],y=[xi[1]],label="xi")
-    for edge in edges:
-        plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]],"r-")
-    for edge in outer_edges:
-        plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]],"b-")
-    plt.legend()
+            # Convoluted way of not adding the middle edge 
+            if len(e) == 1:
+                outer_edges.extend([[edge[0],xi],[edge[1],xi]])
+            else:
+                if i == 0:
+                    outer_edges.append([edge[0],xi])
+                elif i == len(e)-1:
+                    outer_edges.append([edge[1],xi])
+                else:
+                    print("Something happened")        
+            points.append(xi)
+        
 
-    # for tri in triangles:
-    #     t1 = plt.Polygon(tri,fill=False)
-    #     plt.gca().add_patch(t1)
+        plt.figure(figsize=[7,7])
+        plt.axes([0.1, 0.1, 0.8, 0.8], xlim=(0, 1), ylim=(0, 1))
+        plt.scatter(x=all_x[:,0],y=all_x[:,1])
+        plt.scatter(x=[x0[0]],y=[x0[1]],label="x0")
+        plt.scatter(x=[xj[0]],y=[xj[1]],label="xj")
+        plt.scatter(x=[xk[0]],y=[xk[1]],label="xk")
+        plt.scatter(x=[xi[0]],y=[xi[1]],label="xi")
+        for edge in edges:
+            plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]],"r-")
+        for edge in outer_edges:
+            plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]],"b-")
+        plt.legend()
 
-    plt.show()
+        # for tri in triangles:
+        #     t1 = plt.Polygon(tri,fill=False)
+        #     plt.gca().add_patch(t1)
+
+        print("cycle done")
+        plt.show()

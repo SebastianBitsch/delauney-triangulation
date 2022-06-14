@@ -21,4 +21,7 @@ def angle(point: list[float], center: list[float]) -> float:
     """ Returns the angle in degrees between a point and a center"""
     return (np.arctan2(point[1]-center[1], point[0]-center[0]) * 180/np.pi + 360) % 360
 
+def angle(point: list[float], center: list[float], offset: float) -> float:
+    """ Returns the angle in degrees between a point and a center"""
+    return (np.arctan2(point[1]-center[1], point[0]-center[0]) * 180/np.pi + 360 + offset) % 360
 
