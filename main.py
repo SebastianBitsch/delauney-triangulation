@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from util import circle_center, angle, sort_points, diff
 
 # Number of points
-N = 30
+N = 10
 
 def get_closest_point(x, x0, xj):
     """
@@ -72,7 +72,7 @@ def visible_edges(p, points):
     diff = np.max(angles) - np.min(angles)
     
     while 180 < diff:
-        offset += 5
+        offset += 1
         angles = np.array([angle(x,p,offset) for x in points])
         diff = np.max(angles) - np.min(angles)
 
@@ -127,7 +127,7 @@ if __name__ == "__main__":
 
     outer_edges = []
 
-    np.random.seed(29)#11 #25 #16
+    np.random.seed(9)#9
     # Generate points
     x = np.random.rand(N,2).tolist()
     all_x = deepcopy(np.array(x))
@@ -200,27 +200,26 @@ if __name__ == "__main__":
                     outer_edges.append([edge[0],xi])
                 elif i == len(e)-1:
                     outer_edges.append([edge[1],xi])
-                else:
-                    print("Something happened")        
+            
             points.append(xi)
         
+        if len(x) < 100:
+            plt.figure(figsize=[7,7])
+            plt.axes([0.1, 0.1, 0.8, 0.8], xlim=(0, 1), ylim=(0, 1))
+            plt.scatter(x=all_x[:,0],y=all_x[:,1])
+            plt.scatter(x=[x0[0]],y=[x0[1]],label="x0")
+            plt.scatter(x=[xj[0]],y=[xj[1]],label="xj")
+            plt.scatter(x=[xk[0]],y=[xk[1]],label="xk")
+            plt.scatter(x=[xi[0]],y=[xi[1]],label="xi")
+            for edge in edges:
+                plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]],"r-")
+            for edge in outer_edges:
+                plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]],"b-")
+            plt.legend()
 
-        plt.figure(figsize=[7,7])
-        plt.axes([0.1, 0.1, 0.8, 0.8], xlim=(0, 1), ylim=(0, 1))
-        plt.scatter(x=all_x[:,0],y=all_x[:,1])
-        plt.scatter(x=[x0[0]],y=[x0[1]],label="x0")
-        plt.scatter(x=[xj[0]],y=[xj[1]],label="xj")
-        plt.scatter(x=[xk[0]],y=[xk[1]],label="xk")
-        plt.scatter(x=[xi[0]],y=[xi[1]],label="xi")
-        for edge in edges:
-            plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]],"r-")
-        for edge in outer_edges:
-            plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]],"b-")
-        plt.legend()
+            # for tri in triangles:
+            #     t1 = plt.Polygon(tri,fill=False)
+            #     plt.gca().add_patch(t1)
 
-        # for tri in triangles:
-        #     t1 = plt.Polygon(tri,fill=False)
-        #     plt.gca().add_patch(t1)
-
-        print("cycle done")
-        plt.show()
+            print("cycle done")
+            plt.show()
