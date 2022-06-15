@@ -1,39 +1,16 @@
-from copy import deepcopy
+from copy import copy, deepcopy
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 
 from util import circle_center, angle, sort_points, diff
+from plotting import PlotOptions, plot_configuration
 
-# DOESNT WORK with 10 points and seed 9
 
-# Number of points
-N = 10
+# TODO: DOESNT WORK with 10 points and seed 9
 
-# Used for animating the process
-animation_inner_edges = []
-animation_outer_edges = []
-animation_special_points = []
-animation_points = []
-
-def plot_configuration(points, inner_edges, outer_edges, special_points=[], fig_size=(7,7)):
-    plt.figure(figsize=fig_size)
-    plt.axes(xlim=(0, 1), ylim=(0, 1))
-    plt.scatter(x=points[:,0],y=points[:,1])
-    
-    for point, label in special_points:
-        plt.scatter(x=[point[0]],y=[point[1]],label=label)
-    
-    for edge in inner_edges:
-        plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]],"r-")
-    
-    for edge in outer_edges:
-        plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]],"b-")
-    
-    if special_points:
-        plt.legend()
-
-    plt.show()
+# Options
+N = 100
+bounds = (5,5)
+#np.random.seed(9) # 
 
 
 def get_closest_point(x:list, x0:list, xj:list) -> tuple:
@@ -93,6 +70,15 @@ def visible_edges(p0:list, points:list) -> list:
     return edges
 
 
+def generate_points(N: int, scale:tuple) -> list:
+    """Generate N 2D points uniformly and scale them to the bounds"""
+    x = np.random.rand(N,2)
+    x[:,0] *= scale[0]
+    x[:,1] *= scale[1]
+    
+    return x
+
+
 if __name__ == "__main__":
 
     triangles = []
@@ -100,12 +86,9 @@ if __name__ == "__main__":
 
     edges = []
     outer_edges = []
-
-    # np.random.seed(9)#9
     
     # Generate points
-    x = np.random.rand(N,2).tolist()
-    all_x = deepcopy(np.array(x))
+    x = generate_points(N, bounds).tolist()
 
     # Select first point at random
     x0 = x.pop(0)
@@ -124,7 +107,7 @@ if __name__ == "__main__":
     
     edges.extend([[tri[0],tri[1]],[tri[1],tri[2]],[tri[2],tri[0]]])
     points.extend([x0,xk,xj])
-    outer_edges = deepcopy(edges)
+    outer_edges = copy(edges)
 
     # Sort points according to distance from center
     x = sort_points(x,C)
@@ -174,12 +157,9 @@ if __name__ == "__main__":
             
             points.append(xi)
 
-        animation_points.append(all_x)
-        animation_special_points.append(xi)
-        animation_outer_edges.append(outer_edges)
-        animation_inner_edges.append(edges)
-        # Plot last configuration
-        if len(x) == 0:
-            plot_configuration(all_x, edges, outer_edges)
+        
+        # Plot configuration
+        options = PlotOptions(bounds=bounds)
+        plot_configuration(options, np.array(x), edges, outer_edges, len(x)==0)
 
-    #animate_process()
+    
