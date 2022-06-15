@@ -1,16 +1,13 @@
-from copy import copy, deepcopy
+from copy import copy
 import numpy as np
 
-from util import circle_center, angle, sort_points, diff
+from util import circle_center, angle, sort_points, diff, generate_points
 from plotting import PlotOptions, plot_configuration
 
 
 # TODO: DOESNT WORK with 10 points and seed 9
 
-# Options
-N = 100
-bounds = (5,5)
-#np.random.seed(9) # 
+# np.random.seed(9) # 
 
 
 def get_closest_point(x:list, x0:list, xj:list) -> tuple:
@@ -70,33 +67,17 @@ def visible_edges(p0:list, points:list) -> list:
     return edges
 
 
-def generate_points(N: int, scale:tuple) -> list:
-    """Generate N 2D points uniformly and scale them to the bounds"""
-    x = np.random.rand(N,2)
-    x[:,0] *= scale[0]
-    x[:,1] *= scale[1]
-    
-    return x
-
-
-if __name__ == "__main__":
+def triangulate(x: list, plotting_options:PlotOptions = None) -> list:
 
     triangles = []
-    points = []
-
-    edges = []
+    all_edges = []
     outer_edges = []
-    
-    # Generate points
-    x = generate_points(N, bounds).tolist()
 
     # Select first point at random
     x0 = x.pop(0)
     
-    # Find the closest point to x0
-    x = sort_points(x,x0)
-
     # Get closest point to x0
+    x = sort_points(x,x0)
     xj = x.pop(0)
 
     x, xk, C = get_closest_point(x, x0, xj)
@@ -105,9 +86,8 @@ if __name__ == "__main__":
     tri = sorted([x0,xk,xj], key=lambda x: angle(x,C))
     triangles.append(tri)
     
-    edges.extend([[tri[0],tri[1]],[tri[1],tri[2]],[tri[2],tri[0]]])
-    points.extend([x0,xk,xj])
-    outer_edges = copy(edges)
+    all_edges.extend([[tri[0],tri[1]],[tri[1],tri[2]],[tri[2],tri[0]]])
+    outer_edges = copy(all_edges)
 
     # Sort points according to distance from center
     x = sort_points(x,C)
@@ -134,16 +114,22 @@ if __name__ == "__main__":
 
             triangles.append(tri)
 
-            # Add new edges
-            if not [edge[0],xi] in edges:
-                edges.append([edge[0],xi])
-            if not [edge[1],xi] in edges:
-                edges.append([edge[1],xi])
+            # Add first new edge
+            if not [edge[0],xi] in all_edges:
+                all_edges.append([edge[0],xi])
+            elif not [xi, edge[0]] in all_edges:
+                all_edges.append([xi, edge[0]])
+
+            # Add second new edge
+            if not [edge[1],xi] in all_edges:
+                all_edges.append([edge[1],xi])
+            elif not [xi, edge[1]] in all_edges:
+                all_edges.append([xi, edge[1]])
 
             # Remove outer edge that formed the base of triangle
             if edge in outer_edges:
                 outer_edges.remove(edge)
-            else:
+            elif [edge[1],edge[0]] in outer_edges:
                 outer_edges.remove([edge[1],edge[0]])
 
             # Convoluted way of not adding the middle edge 
@@ -154,12 +140,30 @@ if __name__ == "__main__":
                     outer_edges.append([edge[0],xi])
                 elif i == len(e)-1:
                     outer_edges.append([edge[1],xi])
-            
-            points.append(xi)
-
-        
-        # Plot configuration
-        options = PlotOptions(bounds=bounds)
-        plot_configuration(options, np.array(x), edges, outer_edges, len(x)==0)
-
     
+        
+        # Plot configuration if options are provided
+        if plotting_options:
+            plot_configuration(
+                options=plotting_options, 
+                points=np.array(x), 
+                inner_edges=all_edges, 
+                outer_edges=outer_edges, 
+                last_frame=len(x)==0, 
+                special_points=[xi]
+            )
+    
+    return triangles
+
+
+if __name__ == "__main__":
+    # Options
+    bounds = (1,1)
+    N = [5,10,25,50,100,200]
+
+    # Generate points
+    for n in N:
+        x = generate_points(n, bounds).tolist()
+        options = PlotOptions(title=f'N={n}', bounds=bounds)
+        
+        triangles = triangulate(x, options)

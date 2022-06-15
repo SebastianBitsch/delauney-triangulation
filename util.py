@@ -1,11 +1,21 @@
 import numpy as np
 
+def generate_points(N: int, scale:tuple) -> list:
+    """Generate N 2D points uniformly and scale them to the bounds"""
+    x = np.random.rand(N,2)
+    x[:,0] *= scale[0]
+    x[:,1] *= scale[1]
+    
+    return x
+
+
 def diff(a:list, b:list) -> list:
     """
     Helper function for subtracting two lists - similarily to numpy arrays.
     eg. [2,5,8] - [1,5,3] = [1,0,5]
     """
     return [x-y for x,y in zip(a,b)]
+
 
 def sort_points(x:list, x0:list):
     """
@@ -14,7 +24,6 @@ def sort_points(x:list, x0:list):
     arr = sorted(x, key=lambda xi: np.linalg.norm(diff(xi,x0),2))
     return np.array(arr).tolist()
     
-
 
 def circle_center(A:list, B:list, C:list) -> list[float]:
     """
@@ -29,8 +38,6 @@ def circle_center(A:list, B:list, C:list) -> list[float]:
     Uy = (A[0]**2+A[1]**2)*(C[0]-B[0])+(B[0]**2+B[1]**2)*(A[0]-C[0])+(C[0]**2+C[1]**2)*(B[0]-A[0])
 
     return np.array([Ux/D,Uy/D])
-
-
 
 
 def angle(p1: list[float], p2: list[float], offset: float = 0) -> float:
