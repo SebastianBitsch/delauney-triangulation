@@ -4,17 +4,16 @@ from numpy import sqrt
 class CircumCircle():
 
     def __init__(self, A: Point, B: Point, C: Point) -> None:
-        self.A = A
-        self.B = B
-        self.C = C
         self.center = self.calculate_center(A,B,C)
         self.radius = self.calculate_radius(A,B,C)
 
+    # def points(self) -> list[Point]:
+    #     return [self.A, self.B, self.C]
 
     def contains_point(self, p:Point) -> bool:
         return p.dist_to(self.center) < self.radius
 
-    def calculate_radius(A:Point, B:Point, C:Point) -> float:
+    def calculate_radius(self, A:Point, B:Point, C:Point) -> float:
         """https://artofproblemsolving.com/wiki/index.php/Circumradius"""
         a = A.dist_to(B)
         b = B.dist_to(C)
@@ -25,7 +24,7 @@ class CircumCircle():
         return R
 
 
-    def calculate_center(A:Point, B:Point, C:Point) -> Point:
+    def calculate_center(self, A:Point, B:Point, C:Point) -> Point:
         """
         A function for calculting the Cartesian coordinates of the circumcenter given three 2D points (A,B,C).
         Aka. returns the center of a circle that goes through the points A, B and C.
