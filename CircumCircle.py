@@ -7,11 +7,10 @@ class CircumCircle():
         self.center = self.calculate_center(A,B,C)
         self.radius = self.calculate_radius(A,B,C)
 
-    # def points(self) -> list[Point]:
-    #     return [self.A, self.B, self.C]
 
     def contains_point(self, p:Point) -> bool:
         return p.dist_to(self.center) < self.radius
+
 
     def calculate_radius(self, A:Point, B:Point, C:Point) -> float:
         """https://artofproblemsolving.com/wiki/index.php/Circumradius"""
