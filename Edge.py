@@ -3,7 +3,7 @@ from numpy.linalg import norm
 from Point import Point
 
 
-@dataclass
+@dataclass(frozen=True, eq=True)
 class Edge:
     p1: Point
     p2: Point

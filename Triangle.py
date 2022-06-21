@@ -18,3 +18,9 @@ class Triangle:
 
     def has_edge(self, edge:Edge) -> bool:
         return 0 < sum([edge == e for e in self.edges])
+
+    def has_point(self, point:Point) -> bool:
+        return 0 < sum([point == p for p in self.points])
+
+    def get_points(self):
+        return [p.arr for p in self.points]

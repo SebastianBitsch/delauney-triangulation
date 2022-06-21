@@ -1,14 +1,14 @@
 from numpy import ndarray, sqrt
 from dataclasses import dataclass
 
-@dataclass
+@dataclass(frozen=True, eq=True)
 class Point:
     x: float
     y: float
 
     @property
-    def arr(self) -> ndarray:
-        return ndarray([self.x,self.y])
+    def arr(self) -> list:
+        return [self.x,self.y]
 
     def dist_to(self, p) -> float:
         return sqrt((self.x - p.x)**2 + (self.y - p.y)**2)

@@ -14,6 +14,7 @@ class PlotOptions:
     special_color: str = 'orange'
     inner_edge_color: str = 'lightgrey'
     outer_edge_color: str = 'black'
+    triangle_color: str = 'orange'
 
 
 def plot_configuration(options: PlotOptions, points, inner_edges:list, outer_edges:list, last_frame:bool = False, special_points:list = [], labels:list = []):
