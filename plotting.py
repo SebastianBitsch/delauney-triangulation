@@ -1,5 +1,9 @@
 from dataclasses import dataclass
 import matplotlib.pyplot as plt
+import numpy as np
+from Point import Point
+from Triangle import Triangle
+from Edge import Edge
 
 @dataclass
 class PlotOptions:
@@ -17,7 +21,44 @@ class PlotOptions:
     triangle_color: str = 'orange'
 
 
-def plot_configuration(options: PlotOptions, points, inner_edges:list, outer_edges:list, last_frame:bool = False, special_points:list = [], labels:list = []):
+def plot_configuration(options: PlotOptions, points:list[Point] = [], edges:list[Edge] = [], triangles:list[Triangle] = [], last_frame:bool = False, special_points:list = [], labels:list = []):
+
+    plt.figure(figsize=options.fig_size)
+    plt.axes(xlim=(0, options.bounds[0]), ylim=(0, options.bounds[1]))
+    plt.title(options.title, loc='left')
+    plt.title("Triangulation", loc='center')
+    plt.xticks([])
+    plt.yticks([])
+
+
+    points = np.array([p.arr for p in points])
+    if 0 < len(points):
+        plt.scatter(x=points[:,0],y=points[:,1], color=options.point_color, marker='.', zorder=2)
+    
+    for point in special_points:
+        if labels:
+            plt.scatter(x=[point[0]],y=[point[1]],labels=labels,color=options.special_color, zorder=3)
+        else:
+            plt.scatter(x=[point[0]],y=[point[1]],color=options.special_color)
+
+    if labels:
+        plt.legend()
+
+    for tri in triangles:
+        t = plt.Polygon(tri.get_points(), edgecolor=options.triangle_color, fill=False, zorder=1)
+        plt.gca().add_patch(t)
+
+    for edge in edges:
+        plt.plot([edge.p1.x, edge.p2.x],[edge.p1.y,edge.p2.y], options.inner_edge_color, zorder=1)
+    
+    final_time = options.end_time if last_frame else 0
+
+    plt.show(block=False)
+    plt.pause(options.frame_time + final_time)
+    plt.close()
+
+
+def plot_shull(options: PlotOptions, points, inner_edges:list, outer_edges:list, last_frame:bool = False, special_points:list = [], labels:list = []):
 
     plt.figure(figsize=options.fig_size)
     plt.axes(xlim=(0, options.bounds[0]), ylim=(0, options.bounds[0]))

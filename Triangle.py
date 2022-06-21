@@ -5,6 +5,8 @@ from CircumCircle import CircumCircle
 class Triangle:
     
     def __init__(self, points: list[Point]) -> None:
+        assert len(points) == 3
+        
         self.points = points
         self.edges = [
             Edge(points[0],points[1]),

@@ -2,7 +2,7 @@ from copy import copy
 import numpy as np
 
 from util import circle_center, angle, sort_points, diff, generate_points
-from plotting import PlotOptions, plot_configuration
+from plotting import PlotOptions, plot_shull
 
 
 # TODO: DOESNT WORK with 10 points and seed 9
@@ -144,7 +144,7 @@ def triangulate(x: list, plotting_options:PlotOptions = None) -> list:
         
         # Plot configuration if options are provided
         if plotting_options:
-            plot_configuration(
+            plot_shull(
                 options=plotting_options, 
                 points=np.array(x), 
                 inner_edges=all_edges, 

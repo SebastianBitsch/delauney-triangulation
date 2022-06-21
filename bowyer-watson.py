@@ -1,10 +1,11 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
-#from util import generate_points
+from plotting import plot_configuration
+
 from plotting import PlotOptions
 from Point import Point
 from Triangle import Triangle
+
 
 # https://www.youtube.com/watch?v=GctAunEuHt4
 # https://en.wikipedia.org/wiki/Bowyer–Watson_algorithm
@@ -12,32 +13,37 @@ from Triangle import Triangle
 
 def generate_points(N: int, scale:tuple) -> list:
     """Generate N 2D points uniformly and scale them to the bounds"""
-    x = np.random.rand(N,2)
-    x[:,0] *= scale[0]
-    x[:,1] *= scale[1]
+    p = np.random.rand(N,2)
+    p *= np.array(scale)
     
-    return [Point(x,y) for (x,y) in x]
+    return [Point(x,y) for (x,y) in p]
 
-def triangulate(points: list[Point]) -> list[Triangle]:
 
-    super_triangle = Triangle([Point(-1,-2),Point(2,-2),Point(0.5,4)])
-    triangulation = [super_triangle]
+def generate_super_triangle(bounds: tuple) -> Triangle:
+    """Generates a right-angled triangle that exactly encompasses the bounds."""
+    return Triangle([Point(0,0), Point(bounds[0] * 2,0), Point(0, bounds[1] * 2)])
+
+
+def triangulate(points: list[Point], bounds: tuple) -> list[Triangle]:
+
+    super_triangle = generate_super_triangle(bounds)
+    
+    triangulation = set([super_triangle])
 
     for p in points:
         bad_triangles = set()
+        polygon = set()
 
         for tri in triangulation:
             if tri.circum_circle.contains_point(p):
                 bad_triangles.add(tri)
-            
-        polygon = set()
-
+        
         all_edges = []
         for tri in bad_triangles:
             all_edges.extend(tri.edges)
 
         for edge in all_edges:
-            if all_edges.count(edge) == 1 and not edge in polygon:
+            if all_edges.count(edge) == 1:
                 polygon.add(edge)
 
         for tri in bad_triangles:
@@ -45,8 +51,10 @@ def triangulate(points: list[Point]) -> list[Triangle]:
         
         for edge in polygon:
             new_tri = Triangle([edge.p1,edge.p2,p])
-            triangulation.append(new_tri)
-    
+            triangulation.add(new_tri)
+        
+
+    # Remove all edges containing points from the super triangle
     tris = set(triangulation)
     for tri in triangulation:
         for p in super_triangle.points:
@@ -57,52 +65,17 @@ def triangulate(points: list[Point]) -> list[Triangle]:
 
 
 
-def plot_configuration(options: PlotOptions, points:list[Point], triangles:list[Triangle], last_frame:bool = False, special_points:list = [], labels:list = []):
-
-    plt.figure(figsize=options.fig_size)
-    plt.axes(xlim=(0, options.bounds[0]), ylim=(0, options.bounds[0]))
-    plt.title(options.title, loc='left')
-    plt.title("Triangulation", loc='center')
-    plt.xticks([])
-    plt.yticks([])
-
-
-    for tri in triangles:
-        t = plt.Polygon(tri.get_points(), edgecolor=options.triangle_color, fill=False)
-        plt.gca().add_patch(t)
-
-
-    points = np.array([p.arr for p in points])
-    if 0 < len(points):
-        plt.scatter(x=points[:,0],y=points[:,1], color=options.point_color, marker='o')
-    
-    for point in special_points:
-        if labels:
-            plt.scatter(x=[point[0]],y=[point[1]],labels=labels,color=options.special_color)
-        else:
-            plt.scatter(x=[point[0]],y=[point[1]],color=options.special_color)
-
-    if labels:
-        plt.legend()
-
-    final_time = options.end_time if last_frame else 0
-
-    plt.show()
-    # plt.show(block=False)
-    # plt.pause(options.frame_time + final_time)
-    # plt.close()
-
 
 if __name__ == "__main__":
     # Options
-    np.random.seed(20)
-    bounds = (1,1)
+    # np.random.seed(20)
     N = 50
-
-    # Generate points    
-    p = generate_points(N, bounds)
+    bounds = (1,1)
     
-    triangles = triangulate(p)
+    # Generate points
+    p = generate_points(N, bounds)
 
-    options = PlotOptions(title=f'N={N}', bounds=bounds)
-    plot_configuration(options=options,points=p, triangles=triangles,last_frame=True)
+    triangles = triangulate(p, bounds)
+
+    plot_options = PlotOptions(title=f'N={N}', bounds=bounds)
+    plot_configuration(options=plot_options, points=p, triangles=triangles,last_frame=True)

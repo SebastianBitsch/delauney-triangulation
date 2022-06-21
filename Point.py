@@ -1,5 +1,5 @@
-from numpy import ndarray, sqrt
 from dataclasses import dataclass
+from math import sqrt
 
 @dataclass(frozen=True, eq=True)
 class Point:
