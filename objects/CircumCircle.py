@@ -9,11 +9,15 @@ class CircumCircle():
 
 
     def contains_point(self, p:Point) -> bool:
+        """ Check if a point is within the area of the circle"""
         return p.dist_to(self.center) < self.radius
 
 
     def calculate_radius(self, A:Point, B:Point, C:Point) -> float:
-        """https://artofproblemsolving.com/wiki/index.php/Circumradius"""
+        """
+        Calculates the radius of a circle given three points on its circumference
+        Source: https://artofproblemsolving.com/wiki/index.php/Circumradius
+        """
         a = A.dist_to(B)
         b = B.dist_to(C)
         c = C.dist_to(A)

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from math import sqrt
 
-@dataclass(frozen=True, eq=True)
+@dataclass(frozen=True, eq=True) # Freeze class to make it hashable
 class Point:
     x: float
     y: float

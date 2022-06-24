@@ -75,7 +75,6 @@ def triangulate(points: list[Point], bounds: tuple, plot_options:PlotOptions = N
 
 
 
-
 if __name__ == "__main__":
     # Options
     # np.random.seed(20)

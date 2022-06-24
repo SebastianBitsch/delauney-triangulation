@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from Point import Point
 
 
-@dataclass(frozen=True, eq=True)
+@dataclass(frozen=True, eq=True)  # Freeze class to make it hashable
 class Edge:
     p1: Point
     p2: Point
