@@ -1,3 +1,4 @@
+from copy import copy
 import numpy as np
 
 from plotting import plot_configuration
@@ -28,12 +29,14 @@ def triangulate(points: list[Point], bounds: tuple, plot_options:PlotOptions = N
 
     super_triangle = generate_super_triangle(bounds)
     triangulation = set([super_triangle])
-
+    remaining_points = copy(points)
+    
     for p in points:
+        remaining_points.remove(p)
         bad_triangles = set()
         polygon = set()
         
-        plot_configuration(options=plot_options, points=points, triangles=triangulation, special_points = [p], last_frame=False)
+        # plot_configuration(options=plot_options, points=remaining_points, triangles=triangulation, special_points = [p], last_frame=False)
         
         for tri in triangulation:
             if tri.circum_circle.contains_point(p):
@@ -49,13 +52,15 @@ def triangulate(points: list[Point], bounds: tuple, plot_options:PlotOptions = N
 
         for tri in bad_triangles:
             triangulation.remove(tri)
-            plot_configuration(options=plot_options, points=points, triangles=triangulation, special_points = [p], last_frame=False)
+            # plot_configuration(options=plot_options, points=remaining_points, triangles=triangulation, special_points = [p], last_frame=False)
         
 
         for edge in polygon:
             new_tri = Triangle([edge.p1,edge.p2,p])
             triangulation.add(new_tri)
-            plot_configuration(options=plot_options, points=points, triangles=triangulation, special_points = [p], last_frame=False)
+            # plot_configuration(options=plot_options, points=remaining_points, triangles=triangulation, special_points = [p], last_frame=False)
+
+        plot_configuration(options=plot_options, points=remaining_points, triangles=triangulation, special_points = [p], last_frame=False)
 
     # Remove all edges containing points from the super triangle
     tris = set(triangulation)
@@ -63,6 +68,8 @@ def triangulate(points: list[Point], bounds: tuple, plot_options:PlotOptions = N
         for p in super_triangle.points:
             if tri.has_point(p) and tri in tris:
                 tris.remove(tri)
+
+    plot_configuration(options=plot_options, points=remaining_points, triangles=triangulation, special_points = [p], last_frame=False)
 
     return tris
 
@@ -72,13 +79,19 @@ def triangulate(points: list[Point], bounds: tuple, plot_options:PlotOptions = N
 if __name__ == "__main__":
     # Options
     # np.random.seed(20)
-    N = 10
+    N = [10,20,50,100,250]
     bounds = (1,1)
-    plot_options = PlotOptions(title=f'N={N}', bounds=bounds)
+    
 
-    # Generate points
-    p = generate_points(N, bounds)
+    for n in N:
+        # Generate points
+        p = generate_points(n, bounds)
 
-    triangles = triangulate(p, bounds, plot_options)
+        plot_options = PlotOptions(title=f'N={n}', bounds=bounds)
+        plot_configuration(options=plot_options, points=p, first_frame=True)
 
-    plot_configuration(options=plot_options, points=p, triangles=triangles,last_frame=True)
+        # Triangulate
+        triangles = triangulate(p, bounds, plot_options)
+
+        # Plot final configuration
+        plot_configuration(options=plot_options, points=p, triangles=triangles,last_frame=True)

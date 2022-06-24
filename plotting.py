@@ -10,9 +10,9 @@ class PlotOptions:
     title: str
     fig_size: tuple = (7,7)
     bounds: tuple = (2,2)
-    frame_time: float = 0.25
-    start_time: float = 2
-    end_time: float = 20
+    frame_time: float = 0.1
+    start_time: float = 3
+    end_time: float = 3
 
     point_color: str = 'black'
     special_color: str = 'blue'
@@ -29,7 +29,8 @@ def plot_configuration(
     triangles:list[Triangle] = [],
     special_points:list = [], 
     labels:list = [],
-    last_frame:bool = False):
+    last_frame:bool = False,
+    first_frame:bool = False):
     """
     Function for plotting all elements in a configuration inclduing points, edges and triangles.
     """
@@ -38,10 +39,13 @@ def plot_configuration(
     # plt.axes(xlim=(0, options.bounds[0]), ylim=(0, options.bounds[1]))
     plt.axes(xlim=(0, options.bounds[0]*2), ylim=(0, options.bounds[1]*2))
     plt.title(options.title, loc='left')
-    plt.title("Triangulation", loc='center')
+    plt.title("Bowyer-Watson Triangulation", loc='center')
     plt.xticks([])
     plt.yticks([])
 
+    # Plot bounds
+    b = plt.Rectangle((0,0),options.bounds[0],options.bounds[1], color=options.circle_color, fill=False, zorder=0)
+    plt.gca().add_patch(b)
 
     # Plot all regular points
     points = np.array([p.arr for p in points])
@@ -60,19 +64,29 @@ def plot_configuration(
     # Plot the triangles and their corresponding circum circles
     for tri in triangles:
         t = plt.Polygon(tri.get_points(), edgecolor=options.triangle_color, fill=False, zorder=1)
-        c = plt.Circle(tri.circum_circle.center.arr, tri.circum_circle.radius, color=options.circle_color, fill=False, zorder=0)
         plt.gca().add_patch(t)
-        plt.gca().add_patch(c)
+
+        if not last_frame:
+            c = plt.Circle(tri.circum_circle.center.arr, tri.circum_circle.radius, color=options.circle_color, fill=False, zorder=0)
+            plt.gca().add_patch(c)
+
+    # Plot the centers of the circum circles
+    if not last_frame:
+        circle_centers = np.array([t.circum_circle.center.arr for t in triangles])
+        if 0 < len(circle_centers):
+            plt.scatter(x=circle_centers[:,0],y=circle_centers[:,1], color=options.circle_color, marker='.', zorder=1)
+    
 
     # Plot all edges
     for edge in edges:
         plt.plot([edge.p1.x, edge.p2.x],[edge.p1.y,edge.p2.y], options.inner_edge_color, zorder=1)
     
 
-    extra_time = options.end_time if last_frame else 0
+    extra_end_time = options.end_time if last_frame else 0
+    extra_start_time = options.start_time if first_frame else 0
 
     plt.show(block=False)
-    plt.pause(options.frame_time + extra_time)
+    plt.pause(options.frame_time + extra_start_time + extra_end_time)
     plt.close()
 
 
