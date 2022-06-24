@@ -4,8 +4,8 @@ import numpy as np
 from plotting import plot_configuration
 
 from plotting import PlotOptions
-from Point import Point
-from Triangle import Triangle
+from objects.Point import Point
+from objects.Triangle import Triangle
 
 
 def generate_points(N: int, scale:tuple) -> list:

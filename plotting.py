@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import numpy as np
-from Point import Point
-from Triangle import Triangle
-from Edge import Edge
+from objects.Point import Point
+from objects.Triangle import Triangle
+from objects.Edge import Edge
 
 @dataclass
 class PlotOptions:
