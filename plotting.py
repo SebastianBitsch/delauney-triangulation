@@ -11,7 +11,7 @@ class PlotOptions:
     fig_size: tuple = (7,7)
     bounds: tuple = (2,2)
     frame_time: float = 0.1
-    start_time: float = 3
+    start_time: float = 0
     end_time: float = 3
 
     point_color: str = 'black'

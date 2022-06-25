@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Point import Point
+from objects.Point import Point
 
 
 @dataclass(frozen=True, eq=True)  # Freeze class to make it hashable

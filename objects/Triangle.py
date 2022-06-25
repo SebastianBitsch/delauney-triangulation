@@ -1,5 +1,5 @@
-from Point import Point
-from Edge import Edge
+from objects.Point import Point
+from objects.Edge import Edge
 from objects.CircumCircle import CircumCircle
 
 class Triangle:

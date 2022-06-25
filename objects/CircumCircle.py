@@ -1,4 +1,4 @@
-from Point import Point
+from objects.Point import Point
 from numpy import sqrt
 
 class CircumCircle():
