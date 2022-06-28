@@ -39,12 +39,13 @@ class Delauney(object):
         return self.hull
 
 
-    def triangles(self) -> list[Triangle]:
+    def get_triangles(self) -> list[Triangle]:
         return self.triangulation
 
 
     def collinear(self, A: Point, B: Point, C: Point) -> bool:
         """
+        Check if three points are colinear, aka do they lie in a straight line.
         Source: https://math.stackexchange.com/a/405981
         """
         return round((B.y - A.y) * (C.x - B.x),4) == round((C.y - B.y) * (B.x - A.x),4)
@@ -95,20 +96,21 @@ class Delauney(object):
                 if tri.has_point(p) and tri in tris:
                     
                     # Create the convex hull of the triangulation
-                    # points = tri.points
-                    # i = points.index(p)
-                    # ps = points[:i] + points[i+1:]
-                    # hull.append(Edge(*ps))
+                    points = tri.points
+                    i = points.index(p)
+                    ps = points[:i] + points[i+1:]
+                    hull.append(Edge(*ps))
 
                     # Remove triangle from triangulation if it includes a vertex from the super tri
                     tris.remove(tri)
 
 
-        # for e in hull:
-        #     if e.p1 in super_triangle.points or e.p2 in super_triangle.points or Point(e.p1.y,e.p1.x) in super_triangle.points or Point(e.p2.y, e.p2.x) in super_triangle.points:
-        #         hull.remove(e)
+        h = set(hull)
+        for e in hull:
+            if e.p1 in super_triangle.points or e.p2 in super_triangle.points:
+                h.remove(e)
 
-        self.hull = hull
+        self.hull = h
         self.tris = tris
 
         # Return final triangulation

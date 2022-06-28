@@ -10,9 +10,9 @@ class PlotOptions:
     title: str
     fig_size: tuple = (7,7)
     bounds: tuple = (1,1)
-    frame_time: float = 0.1
+    frame_time: float = 0.2
     start_time: float = 0
-    end_time: float = 0.2
+    end_time: float = 3
 
     point_color: str = 'black'
     special_color: str = 'blue'
@@ -79,7 +79,7 @@ def plot_configuration(
 
     # Plot all edges
     for edge in edges:
-        plt.plot([edge.A.x, edge.B.x],[edge.A.y,edge.B.y], options.outer_edge_color, zorder=1)
+        plt.plot([edge.p1.x, edge.p2.x],[edge.p1.y,edge.p2.y], options.outer_edge_color, zorder=1)
     
 
     extra_end_time = options.end_time if last_frame else 0
