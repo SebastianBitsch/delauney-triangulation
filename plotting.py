@@ -9,10 +9,10 @@ from objects.Edge import Edge
 class PlotOptions:
     title: str
     fig_size: tuple = (7,7)
-    bounds: tuple = (2,2)
+    bounds: tuple = (1,1)
     frame_time: float = 0.1
     start_time: float = 0
-    end_time: float = 3
+    end_time: float = 0.2
 
     point_color: str = 'black'
     special_color: str = 'blue'
@@ -79,7 +79,7 @@ def plot_configuration(
 
     # Plot all edges
     for edge in edges:
-        plt.plot([edge.p1.x, edge.p2.x],[edge.p1.y,edge.p2.y], options.inner_edge_color, zorder=1)
+        plt.plot([edge.A.x, edge.B.x],[edge.A.y,edge.B.y], options.outer_edge_color, zorder=1)
     
 
     extra_end_time = options.end_time if last_frame else 0
@@ -91,35 +91,35 @@ def plot_configuration(
 
 
 
-def plot_shull(options: PlotOptions, points, inner_edges:list, outer_edges:list, last_frame:bool = False, special_points:list = [], labels:list = []):
+# def plot_shull(options: PlotOptions, points, inner_edges:list, outer_edges:list, last_frame:bool = False, special_points:list = [], labels:list = []):
 
-    plt.figure(figsize=options.fig_size)
-    plt.axes(xlim=(0, options.bounds[0]), ylim=(0, options.bounds[0]))
-    plt.title(options.title, loc='left')
-    plt.title("Triangulation", loc='center')
-    plt.xticks([])
-    plt.yticks([])
+#     plt.figure(figsize=options.fig_size)
+#     plt.axes(xlim=(0, options.bounds[0]), ylim=(0, options.bounds[0]))
+#     plt.title(options.title, loc='left')
+#     plt.title("Triangulation", loc='center')
+#     plt.xticks([])
+#     plt.yticks([])
 
-    if 0 < len(points):
-        plt.scatter(x=points[:,0],y=points[:,1], color=options.point_color, marker='.')
+#     if 0 < len(points):
+#         plt.scatter(x=points[:,0],y=points[:,1], color=options.point_color, marker='.')
     
-    for point in special_points:
-        if labels:
-            plt.scatter(x=[point[0]],y=[point[1]],labels=labels,color=options.special_color)
-        else:
-            plt.scatter(x=[point[0]],y=[point[1]],color=options.special_color)
+#     for point in special_points:
+#         if labels:
+#             plt.scatter(x=[point[0]],y=[point[1]],labels=labels,color=options.special_color)
+#         else:
+#             plt.scatter(x=[point[0]],y=[point[1]],color=options.special_color)
 
-    for edge in inner_edges:
-        plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]], options.inner_edge_color)
+#     for edge in inner_edges:
+#         plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]], options.inner_edge_color)
     
-    for edge in outer_edges:
-        plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]], options.outer_edge_color)
+#     for edge in outer_edges:
+#         plt.plot([edge[0][0],edge[1][0]],[edge[0][1],edge[1][1]], options.outer_edge_color)
     
-    if labels:
-        plt.legend()
+#     if labels:
+#         plt.legend()
 
-    final_time = options.end_time if last_frame else 0
+#     final_time = options.end_time if last_frame else 0
 
-    plt.show(block=False)
-    plt.pause(options.frame_time + final_time)
-    plt.close()
+#     plt.show(block=False)
+#     plt.pause(options.frame_time + final_time)
+#     plt.close()

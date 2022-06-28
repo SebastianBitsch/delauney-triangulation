@@ -18,6 +18,9 @@ class Triangle:
     def __iter__(self):
         yield from self.edges
 
+    def __repr__(self) -> str:
+        return f"Edges: {self.edges}"
+
     def has_edge(self, edge:Edge) -> bool:
         """ Check if edge is one of the ones that make up the triangle"""
         return 0 < sum([edge == e for e in self.edges])
