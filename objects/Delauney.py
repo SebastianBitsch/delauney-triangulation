@@ -29,6 +29,7 @@ class Delauney(object):
 
         self.points = [Point(x,y) for (x,y) in points]
         self.triangulation = self.__triangulate(self.points, plot_options)
+        self.voronoi = self.__calculate_vornoi()
     
 
     def get_points(self) -> list[Point]:
@@ -40,6 +41,8 @@ class Delauney(object):
     def get_triangles(self) -> list[Triangle]:
         return self.triangulation
 
+    def get_voronoi(self) -> list[Edge]:
+        return self.voronoi
 
     def collinear(self, A: Point, B: Point, C: Point) -> bool:
         """
@@ -113,6 +116,24 @@ class Delauney(object):
 
         # Return final triangulation
         return tris
+
+    
+    def __calculate_vornoi(self) -> list[Triangle]:
+        """ 
+        A not very efficent implementation of getting the voronoi diagram from the delauney triangulation.
+        Utilizes the fact that the edges in the vornoi will be edges between circum-circle-centers of
+        neighbouring triangles in the delauney triangulation.
+        """
+        voronoi = []
+        for tri in self.triangulation:
+            for edge in tri:
+                
+
+                for t in self.triangulation:
+                    if edge in t:
+                        voronoi.append(Edge(tri.circum_circle.center, t.circum_circle.center))
+
+        return voronoi
 
 
     def __generate_super_triangle(self) -> Triangle:
