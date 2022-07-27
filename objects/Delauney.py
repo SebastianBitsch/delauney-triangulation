@@ -10,7 +10,7 @@ from plotting import PlotOptions, plot_configuration
 
 
 def generate_points(N: int, scale:tuple = (1,1)) -> list:
-    """Generate N 2D points uniformly and scale them to a given dimension."""
+    """Generate N 2D points uniformly and scale them to a given size."""
     return [(random.random() * scale[0], random.random() * scale[1]) for _ in range(N)]
 
 
@@ -34,10 +34,8 @@ class Delauney(object):
     def get_points(self) -> list[Point]:
         return self.points
 
-
     def get_hull(self) -> list[Edge]:
         return self.hull
-
 
     def get_triangles(self) -> list[Triangle]:
         return self.triangulation
@@ -104,7 +102,7 @@ class Delauney(object):
                     # Remove triangle from triangulation if it includes a vertex from the super tri
                     tris.remove(tri)
 
-
+        # Remove the last of the edges in the convex hull. i.e. the edges in tris where two of the verts were in the supertriangle
         h = set(hull)
         for e in hull:
             if e.p1 in super_triangle.points or e.p2 in super_triangle.points:
@@ -118,7 +116,7 @@ class Delauney(object):
 
 
     def __generate_super_triangle(self) -> Triangle:
-        """Generates a right-angled triangle that exactly encompasses the points"""
+        """Generates a right-angled triangle at (0,0) that exactly encompasses the points"""
         x_coords = [p.x for p in self.points]
         y_coords = [p.y for p in self.points]
-        return Triangle([Point(0,0), Point(max(x_coords) * 2.01, 0), Point(0, max(y_coords) * 2.01)])
+        return Triangle([Point(0,0), Point(max(x_coords) * 2, 0), Point(0, max(y_coords) * 2)])

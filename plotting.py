@@ -12,9 +12,9 @@ class PlotOptions:
     title: str
     fig_size: tuple = (7,7)
     bounds: tuple = (1,1)
-    frame_time: float = 0.2
+    frame_time: float = 0.1
     start_time: float = 0
-    end_time: float = 3
+    end_time: float = 2
 
     point_color: str = 'black'
     special_color: str = 'blue'
@@ -22,6 +22,7 @@ class PlotOptions:
     outer_edge_color: str = 'black'
     triangle_color: str = 'orange'
     circle_color: str = 'lightgrey'
+
 
 
 def plot_configuration(

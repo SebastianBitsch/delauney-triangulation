@@ -11,6 +11,8 @@ if __name__ == "__main__":
         p = generate_points(n, scale = (1,1))
         plot_options = PlotOptions(title=f'N={n}', bounds=(1,1))
         
-        d = Delauney(p, plot_options=plot_options)
+        # d = Delauney(p,plot_options=plot_options)
+        d = Delauney(p)
         
-        plot_configuration(options=plot_options, points=d.get_points(), triangles=d.get_triangles(), edges=d.get_hull(), last_frame=True)
+        
+        #plot_configuration(options=plot_options, points=d.get_points(), triangles=d.get_triangles(), edges=d.get_hull(), last_frame=True)
